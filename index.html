@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2563eb" />
+  <title>FixNow | ระบบแจ้งซ่อมออนไลน์ — แจ้งไว ติดตามได้แบบเรียลไทม์</title>
+  <meta name="description" content="FixNow ระบบแจ้งซ่อมและบำรุงรักษาออนไลน์ แจ้งปัญหาช่างไฟ ประปา แอร์ ไอที และอาคารสถานที่ได้ใน 1 นาที พร้อมติดตามสถานะงานซ่อมแบบเรียลไทม์" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232563eb'/%3E%3Cpath d='M38 12 22 36h10l-6 16 16-24H32l6-16Z' fill='%23fff'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', 'ui-sans-serif', 'system-ui', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a'
+            }
+          },
+          boxShadow: {
+            card: '0 1px 2px 0 rgb(15 23 42 / 0.04), 0 12px 32px -12px rgb(15 23 42 / 0.16)',
+            float: '0 24px 60px -24px rgb(37 99 235 / 0.45)'
+          },
+          keyframes: {
+            'fade-up': {
+              '0%': { opacity: '0', transform: 'translateY(14px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            'pop-in': {
+              '0%': { opacity: '0', transform: 'scale(.94) translateY(10px)' },
+              '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+            },
+            'soft-pulse': {
+              '0%, 100%': { boxShadow: '0 0 0 0 rgb(245 158 11 / .55)' },
+              '50%': { boxShadow: '0 0 0 8px rgb(245 158 11 / 0)' }
+            },
+            'toast-in': {
+              '0%': { opacity: '0', transform: 'translateY(18px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            }
+          },
+          animation: {
+            'fade-up': 'fade-up .7s cubic-bezier(.22,1,.36,1) both',
+            'pop-in': 'pop-in .25s cubic-bezier(.22,1,.36,1) both',
+            'soft-pulse': 'soft-pulse 2s ease-out infinite',
+            'toast-in': 'toast-in .3s ease-out both'
+          }
+        }
+      }
+    };
+  </script>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root { color-scheme: light; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { text-rendering: optimizeLegibility; }
+    section[id] { scroll-margin-top: 88px; }
+
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+    .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* Hide number input spinners */
+    input[type='number']::-webkit-outer-spin-button,
+    input[type='number']::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* Nicer placeholder contrast */
+    ::placeholder { color: #94a3b8; opacity: 1; }
+
+    /* Stepper connector */
+    .stepper-track { background-image: linear-gradient(90deg, #e2e8f0 0%, #e2e8f0 100%); }
+    .stepper-track > span { display: block; height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #2563eb, #3b82f6); transition: width .8s cubic-bezier(.22,1,.36,1); }
+
+    /* Modal scroll lock */
+    body.modal-open { overflow: hidden; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; border: 2px solid #f1f5f9; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Prevent iOS zoom on focus */
+    @media (max-width: 640px) {
+      input, select, textarea { font-size: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-700 antialiased">
+<!-- ===== Top utility bar ===== -->
+<div class="hidden bg-slate-900 text-slate-300 md:block">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-2 text-[13px]">
+    <p class="flex items-center gap-2">
+      <i data-lucide="shield-check" class="h-4 w-4 text-emerald-400"></i>
+      <span>ระบบแจ้งซ่อมมาตรฐานอาคาร · ข้อมูลของคุณถูกจัดเก็บอย่างปลอดภัย</span>
+    </p>
+    <div class="flex items-center gap-6">
+      <span class="flex items-center gap-2">
+        <i data-lucide="clock" class="h-4 w-4 text-slate-400"></i>
+        จันทร์–เสาร์ 08:00–18:00 น.
+      </span>
+      <a href="tel:021234567" class="flex items-center gap-2 font-medium text-white transition hover:text-amber-300">
+        <i data-lucide="phone-call" class="h-4 w-4 text-amber-400"></i>
+        สายด่วนฉุกเฉิน 02-123-4567
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Sticky navbar ===== -->
+<header id="site-header" class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 backdrop-blur-md transition-shadow duration-300">
+  <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 sm:px-6 lg:h-[72px]" aria-label="เมนูหลัก">
+    <!-- Brand -->
+    <a href="#top" class="group flex items-center gap-2.5">
+      <span class="relative grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/25 transition group-hover:bg-blue-700">
+        <i data-lucide="zap" class="h-5 w-5"></i>
+        <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-amber-400"></span>
+      </span>
+      <span class="leading-tight">
+        <span class="block text-lg font-semibold tracking-tight text-slate-900">FixNow</span>
+        <span class="block text-[11px] font-medium text-slate-500">ระบบแจ้งซ่อมออนไลน์</span>
+      </span>
+    </a>
+
+    <!-- Desktop links -->
+    <ul class="hidden items-center gap-1 lg:flex">
+      <li><a href="#features" class="nav-link rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">จุดเด่น</a></li>
+      <li><a href="#how-it-works" class="nav-link rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">ขั้นตอน</a></li>
+      <li><a href="#track" class="nav-link rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">เช็กสถานะ</a></li>
+      <li class="mx-2 hidden h-6 w-px bg-slate-200 lg:block"></li>
+      <li>
+        <a href="#track" class="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">
+          <i data-lucide="search" class="h-4 w-4"></i>
+          ติดตามงานซ่อม
+        </a>
+      </li>
+    </ul>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <a href="#report" class="hidden items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-blue-600/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:flex">
+        <i data-lucide="wrench" class="h-4 w-4"></i>
+        แจ้งซ่อมทันที
+      </a>
+      <button id="mobile-menu-btn" type="button" class="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 text-slate-700 transition hover:bg-slate-100 lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="เปิดเมนู">
+        <i data-lucide="menu" class="h-5 w-5"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white lg:hidden">
+    <ul class="mx-auto max-w-7xl space-y-1 px-5 py-4">
+      <li><a href="#features" class="mobile-link flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"><i data-lucide="sparkles" class="h-4 w-4 text-blue-600"></i>จุดเด่น</a></li>
+      <li><a href="#how-it-works" class="mobile-link flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"><i data-lucide="list-checks" class="h-4 w-4 text-blue-600"></i>ขั้นตอนการใช้งาน</a></li>
+      <li><a href="#track" class="mobile-link flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"><i data-lucide="search-check" class="h-4 w-4 text-blue-600"></i>เช็กสถานะงานซ่อม</a></li>
+      <li class="pt-2">
+        <a href="#report" class="mobile-link flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25">
+          <i data-lucide="wrench" class="h-4 w-4"></i>
+          แจ้งซ่อมทันที
+        </a>
+      </li>
+      <li class="pt-2">
+        <a href="tel:021234567" class="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">
+          <i data-lucide="phone-call" class="h-4 w-4 text-amber-500"></i>
+          สายด่วนฉุกเฉิน 02-123-4567
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<main id="top">
+<!-- ===== Hero ===== -->
+<section class="relative overflow-hidden">
+  <!-- decorative background -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute inset-0 bg-gradient-to-b from-blue-50/80 via-slate-50 to-slate-50"></div>
+    <div class="absolute -left-32 top-0 h-72 w-72 rounded-full bg-blue-200/40 blur-3xl"></div>
+    <div class="absolute -right-24 top-24 h-80 w-80 rounded-full bg-amber-100/60 blur-3xl"></div>
+    <svg class="absolute inset-x-0 top-0 h-full w-full opacity-[0.35]" aria-hidden="true">
+      <defs>
+        <pattern id="hero-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M32 0H0v32" fill="none" stroke="#cbd5e1" stroke-width=".6" stroke-dasharray="2 6"></path>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#hero-grid)"></rect>
+    </svg>
+  </div>
+
+  <div class="mx-auto max-w-7xl px-5 pb-16 pt-12 sm:px-6 lg:pb-24 lg:pt-20">
+    <div class="grid items-center gap-14 lg:grid-cols-[1.05fr_.95fr] lg:gap-10">
+
+      <!-- Copy -->
+      <div class="max-w-2xl animate-fade-up">
+        <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-3.5 py-1.5 text-xs font-medium text-blue-700 shadow-sm backdrop-blur">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+          </span>
+          เปิดให้บริการแจ้งซ่อมออนไลน์ 24 ชั่วโมง
+        </span>
+
+        <h1 class="mt-5 text-[2rem] font-semibold leading-[1.25] tracking-tight text-slate-900 sm:text-5xl sm:leading-[1.2]">
+          แจ้งซ่อมไวใน 1 นาที
+          <span class="relative mt-1 block text-blue-600">
+            ติดตามสถานะได้ทันที
+            <svg class="absolute -bottom-2 left-0 h-3 w-[62%] text-amber-400" viewBox="0 0 300 12" fill="none" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M2 9c60-6 140-8 296-4" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+            </svg>
+          </span>
+        </h1>
+
+        <p class="mt-6 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          รวมช่างไฟฟ้า ประปา แอร์ ไอที และงานอาคารสถานที่ไว้ในที่เดียว
+          แจ้งปัญหาออนไลน์พร้อมแนบรูป แล้วติดตามความคืบหน้าทุกขั้นตอน
+          ตั้งแต่รับเรื่องจนงานเสร็จ — โปร่งใส ตรวจสอบได้ทุกเวลา
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a href="#report" class="group inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-base font-semibold text-white shadow-float transition hover:-translate-y-0.5 hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+            <i data-lucide="wrench" class="h-5 w-5"></i>
+            แจ้งปัญหาซ่อม
+            <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
+          </a>
+          <a href="#track" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-base font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2">
+            <i data-lucide="search-check" class="h-5 w-5 text-blue-600"></i>
+            ติดตามสถานะ
+          </a>
+        </div>
+
+        <!-- trust indicators -->
+        <div class="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <div class="flex items-center gap-3">
+            <div class="flex -space-x-2">
+              <span class="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-blue-100 text-xs font-semibold text-blue-700">กจ</span>
+              <span class="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-amber-100 text-xs font-semibold text-amber-700">สน</span>
+              <span class="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-emerald-100 text-xs font-semibold text-emerald-700">พช</span>
+              <span class="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-slate-100 text-xs font-semibold text-slate-600">+9</span>
+            </div>
+            <div class="text-sm leading-tight">
+              <p class="font-semibold text-slate-900">ทีมช่างมากกว่า 40 คน</p>
+              <p class="text-slate-500">พร้อมดูแลทุกอาคาร</p>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div class="text-sm leading-tight">
+            <p class="flex items-center gap-1 font-semibold text-slate-900">
+              <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+              4.9/5
+            </p>
+            <p class="text-slate-500">จากผู้ใช้งาน 2,800+ ราย</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status card mockup -->
+      <div class="relative mx-auto w-full max-w-md animate-fade-up lg:mr-0" style="animation-delay:120ms">
+        <div class="absolute -left-4 top-16 z-10 hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-card sm:flex">
+          <span class="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="timer" class="h-4 w-4"></i></span>
+          <div class="leading-tight">
+            <p class="text-[11px] text-slate-500">ตอบรับเฉลี่ย</p>
+            <p class="text-sm font-semibold text-slate-900">4 นาที</p>
+          </div>
+        </div>
+        <div class="absolute -right-3 bottom-24 z-10 hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-card sm:flex">
+          <span class="grid h-8 w-8 place-items-center rounded-lg bg-blue-50 text-blue-600"><i data-lucide="badge-check" class="h-4 w-4"></i></span>
+          <div class="leading-tight">
+            <p class="text-[11px] text-slate-500">ปิดงานตรงเวลา</p>
+            <p class="text-sm font-semibold text-slate-900">96%</p>
+          </div>
+        </div>
+
+        <div class="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">หมายเลขงานซ่อม</p>
+              <p class="mt-1 font-mono text-xl font-semibold tracking-tight text-slate-900">REP-1001</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-inset ring-amber-200">
+              <span class="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-amber-500"></span>
+              กำลังซ่อม
+            </span>
+          </div>
+
+          <div class="mt-4 rounded-xl bg-slate-50 p-3.5">
+            <div class="flex items-start gap-3">
+              <span class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber-100 text-amber-700"><i data-lucide="wind" class="h-4 w-4"></i></span>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-slate-900">แอร์ไม่เย็น · ห้อง 1204</p>
+                <p class="mt-0.5 flex items-center gap-1 text-xs text-slate-500"><i data-lucide="map-pin" class="h-3.5 w-3.5"></i>อาคาร A ชั้น 12</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <div class="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+              <div class="absolute inset-y-0 left-0 w-[68%] rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></div>
+            </div>
+            <div class="mt-2 flex justify-between text-[11px] font-medium">
+              <span class="text-blue-600">รับเรื่อง</span>
+              <span class="text-blue-600">มอบหมายช่าง</span>
+              <span class="text-blue-600">กำลังซ่อม</span>
+              <span class="text-slate-400">เสร็จสิ้น</span>
+            </div>
+          </div>
+
+          <div class="mt-5 flex items-center justify-between rounded-xl border border-slate-200 p-3">
+            <div class="flex items-center gap-2.5">
+              <span class="grid h-9 w-9 place-items-center rounded-full bg-blue-600 text-xs font-semibold text-white">ชช</span>
+              <div class="leading-tight">
+                <p class="text-sm font-medium text-slate-900">ช่างสมชาย · ช่างแอร์</p>
+                <p class="text-[11px] text-slate-500">ถึงหน้างาน 09:42 น.</p>
+              </div>
+            </div>
+            <span class="grid h-8 w-8 place-items-center rounded-lg bg-slate-100 text-slate-500"><i data-lucide="message-square" class="h-4 w-4"></i></span>
+          </div>
+
+          <p class="mt-3 flex items-center gap-1.5 text-[11px] text-slate-400">
+            <i data-lucide="clock" class="h-3.5 w-3.5"></i>
+            อัปเดตล่าสุด 2 นาทีที่แล้ว
+          </p>
+        </div>
+
+        <div class="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-tr from-blue-600/10 via-transparent to-amber-400/10 blur-xl"></div>
+      </div>
+    </div>
+
+    <!-- quick stats strip -->
+    <dl class="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      <div class="reveal rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+        <dd class="text-2xl font-semibold text-slate-900">12,480<span class="text-blue-600">+</span></dd>
+        <dt class="mt-1 text-xs text-slate-500">งานซ่อมที่ปิดสำเร็จ</dt>
+      </div>
+      <div class="reveal rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm" style="transition-delay:60ms">
+        <dd class="text-2xl font-semibold text-slate-900">4 <span class="text-base font-medium text-slate-500">นาที</span></dd>
+        <dt class="mt-1 text-xs text-slate-500">เวลาตอบรับเฉลี่ย</dt>
+      </div>
+      <div class="reveal rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm" style="transition-delay:120ms">
+        <dd class="text-2xl font-semibold text-slate-900">98<span class="text-blue-600">%</span></dd>
+        <dt class="mt-1 text-xs text-slate-500">ความพึงพอใจผู้ใช้งาน</dt>
+      </div>
+      <div class="reveal rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm" style="transition-delay:180ms">
+        <dd class="text-2xl font-semibold text-slate-900">36 <span class="text-base font-medium text-slate-500">แห่ง</span></dd>
+        <dt class="mt-1 text-xs text-slate-500">อาคารที่ให้บริการ</dt>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- ===== Report form ===== -->
+<section id="report" class="border-y border-slate-200 bg-white py-16 lg:py-24">
+  <div class="mx-auto max-w-7xl px-5 sm:px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <span class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-100">
+        <i data-lucide="clipboard-pen-line" class="h-3.5 w-3.5"></i>
+        แบบฟอร์มแจ้งซ่อม
+      </span>
+      <h2 class="mt-4 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">แจ้งปัญหาที่พบได้เลยตอนนี้</h2>
+      <p class="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+        กรอกรายละเอียดให้ครบถ้วนเพื่อให้ช่างเตรียมอุปกรณ์ได้ถูกต้อง
+        ระบบจะออกหมายเลขงานซ่อมให้ทันทีหลังส่งข้อมูล
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+
+      <!-- form card -->
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-8">
+        <form id="repair-form" novalidate autocomplete="off">
+          <div class="grid gap-5 sm:grid-cols-2">
+            <!-- reporter name -->
+            <div class="sm:col-span-1">
+              <label for="reporterName" class="mb-1.5 block text-sm font-medium text-slate-800">
+                ชื่อผู้แจ้ง <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 grid w-10 place-items-center text-slate-400"><i data-lucide="user" class="h-4 w-4"></i></span>
+                <input id="reporterName" name="reporterName" type="text" required maxlength="80"
+                  placeholder="เช่น สมหญิง ใจดี"
+                  class="w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10" />
+              </div>
+              <p class="mt-1.5 hidden text-xs font-medium text-rose-600" data-error-for="reporterName"></p>
+            </div>
+
+            <!-- contact -->
+            <div class="sm:col-span-1">
+              <label for="contact" class="mb-1.5 block text-sm font-medium text-slate-800">
+                เบอร์โทร / LINE ID <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 grid w-10 place-items-center text-slate-400"><i data-lucide="phone" class="h-4 w-4"></i></span>
+                <input id="contact" name="contact" type="text" required maxlength="60"
+                  placeholder="08x-xxx-xxxx หรือ @lineid"
+                  class="w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10" />
+              </div>
+              <p class="mt-1.5 hidden text-xs font-medium text-rose-600" data-error-for="contact"></p>
+            </div>
+
+            <!-- category -->
+            <div class="sm:col-span-1">
+              <label for="category" class="mb-1.5 block text-sm font-medium text-slate-800">
+                หมวดหมู่งานซ่อม <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 grid w-10 place-items-center text-slate-400"><i data-lucide="layers" class="h-4 w-4"></i></span>
+                <select id="category" name="category" required
+                  class="w-full appearance-none rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-9 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10">
+                  <option value="" selected disabled>-- เลือกหมวดหมู่ --</option>
+                  <option value="ไฟฟ้า">⚡ ไฟฟ้า</option>
+                  <option value="ประปา">🚰 ประปา</option>
+                  <option value="เครื่องปรับอากาศ">❄️ เครื่องปรับอากาศ</option>
+                  <option value="อุปกรณ์ไอที">💻 อุปกรณ์ไอที</option>
+                  <option value="อาคารสถานที่">🏢 อาคารสถานที่</option>
+                </select>
+                <span class="pointer-events-none absolute inset-y-0 right-0 grid w-9 place-items-center text-slate-400"><i data-lucide="chevron-down" class="h-4 w-4"></i></span>
+              </div>
+              <p class="mt-1.5 hidden text-xs font-medium text-rose-600" data-error-for="category"></p>
+            </div>
+
+            <!-- location -->
+            <div class="sm:col-span-1">
+              <label for="location" class="mb-1.5 block text-sm font-medium text-slate-800">
+                สถานที่ / ห้อง <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 grid w-10 place-items-center text-slate-400"><i data-lucide="map-pin" class="h-4 w-4"></i></span>
+                <input id="location" name="location" type="text" required maxlength="120"
+                  placeholder="เช่น อาคาร A ชั้น 12 ห้อง 1204"
+                  class="w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10" />
+              </div>
+              <p class="mt-1.5 hidden text-xs font-medium text-rose-600" data-error-for="location"></p>
+            </div>
+            <!-- urgency -->
+            <div class="sm:col-span-2">
+              <span class="mb-2 block text-sm font-medium text-slate-800">ระดับความเร่งด่วน</span>
+              <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="ระดับความเร่งด่วน">
+                <label class="relative cursor-pointer">
+                  <input type="radio" name="urgency" value="ปกติ" class="peer sr-only" checked />
+                  <span class="flex items-start gap-2.5 rounded-xl border border-slate-300 bg-white p-3 transition hover:border-slate-400 peer-checked:border-blue-500 peer-checked:bg-blue-50/60 peer-checked:ring-4 peer-checked:ring-blue-500/10 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500">
+                    <i data-lucide="circle-check" class="mt-0.5 h-4 w-4 shrink-0 text-slate-400"></i>
+                    <span class="leading-tight">
+                      <span class="block text-sm font-semibold text-slate-800">ปกติ</span>
+                      <span class="mt-0.5 block text-[11px] text-slate-500">ซ่อมภายใน 1–3 วัน</span>
+                    </span>
+                  </span>
+                </label>
+                <label class="relative cursor-pointer">
+                  <input type="radio" name="urgency" value="ด่วน" class="peer sr-only" />
+                  <span class="flex items-start gap-2.5 rounded-xl border border-slate-300 bg-white p-3 transition hover:border-slate-400 peer-checked:border-amber-500 peer-checked:bg-amber-50/60 peer-checked:ring-4 peer-checked:ring-amber-500/10 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-500">
+                    <i data-lucide="alarm-clock" class="mt-0.5 h-4 w-4 shrink-0 text-slate-400"></i>
+                    <span class="leading-tight">
+                      <span class="block text-sm font-semibold text-slate-800">ด่วน</span>
+                      <span class="mt-0.5 block text-[11px] text-slate-500">ซ่อมภายใน 24 ชม.</span>
+                    </span>
+                  </span>
+                </label>
+                <label class="relative cursor-pointer">
+                  <input type="radio" name="urgency" value="ฉุกเฉิน" class="peer sr-only" />
+                  <span class="flex items-start gap-2.5 rounded-xl border border-slate-300 bg-white p-3 transition hover:border-slate-400 peer-checked:border-rose-500 peer-checked:bg-rose-50/60 peer-checked:ring-4 peer-checked:ring-rose-500/10 peer-focus-visible:ring-2 peer-focus-visible:ring-rose-500">
+                    <i data-lucide="siren" class="mt-0.5 h-4 w-4 shrink-0 text-slate-400"></i>
+                    <span class="leading-tight">
+                      <span class="block text-sm font-semibold text-slate-800">ฉุกเฉิน</span>
+                      <span class="mt-0.5 block text-[11px] text-slate-500">เข้าซ่อมทันที</span>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- description -->
+            <div class="sm:col-span-2">
+              <div class="mb-1.5 flex items-baseline justify-between gap-3">
+                <label for="description" class="block text-sm font-medium text-slate-800">
+                  รายละเอียดปัญหา <span class="text-rose-500">*</span>
+                </label>
+                <span id="desc-counter" class="text-[11px] tabular-nums text-slate-400">0 / 500</span>
+              </div>
+              <textarea id="description" name="description" rows="4" required maxlength="500"
+                placeholder="อธิบายอาการที่พบ เช่น แอร์มีเสียงดังและไม่เย็น เริ่มเป็นตั้งแต่เมื่อวานช่วงบ่าย..."
+                class="w-full resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm leading-relaxed text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10"></textarea>
+              <p class="mt-1.5 hidden text-xs font-medium text-rose-600" data-error-for="description"></p>
+            </div>
+            <!-- image upload -->
+            <div class="sm:col-span-2">
+              <span class="mb-1.5 block text-sm font-medium text-slate-800">
+                แนบรูปภาพประกอบ <span class="ml-1 text-xs font-normal text-slate-400">(ไม่บังคับ · สูงสุด 3 รูป)</span>
+              </span>
+
+              <label for="imageInput" id="dropzone"
+                class="group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/70 px-4 py-7 text-center transition hover:border-blue-400 hover:bg-blue-50/50">
+                <span class="grid h-11 w-11 place-items-center rounded-full bg-white text-blue-600 shadow-sm ring-1 ring-slate-200 transition group-hover:scale-105">
+                  <i data-lucide="image-plus" class="h-5 w-5"></i>
+                </span>
+                <span class="mt-2.5 text-sm font-medium text-slate-700">คลิกเพื่ออัปโหลด หรือลากไฟล์มาวาง</span>
+                <span class="mt-1 text-xs text-slate-500">JPG, PNG · ขนาดไม่เกิน 5 MB ต่อรูป</span>
+                <input id="imageInput" type="file" accept="image/*" multiple class="sr-only" />
+              </label>
+
+              <div id="previewGrid" class="mt-3 hidden grid-cols-3 gap-2.5 sm:grid-cols-4"></div>
+              <p id="image-error" class="mt-1.5 hidden text-xs font-medium text-rose-600"></p>
+            </div>
+
+            <!-- consent -->
+            <div class="sm:col-span-2">
+              <label class="flex cursor-pointer items-start gap-2.5">
+                <input id="consent" type="checkbox"
+                  class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500/40" />
+                <span class="text-xs leading-relaxed text-slate-600">
+                  ข้าพเจ้ายินยอมให้ทีมช่างติดต่อกลับเพื่อนัดหมายเข้าซ่อม และยอมรับ
+                  <a href="#" class="font-medium text-blue-600 underline-offset-2 hover:underline">ข้อกำหนดการให้บริการ</a>
+                </span>
+              </label>
+              <p class="mt-1.5 hidden text-xs font-medium text-rose-600" data-error-for="consent"></p>
+            </div>
+
+            <!-- submit -->
+            <div class="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+              <p class="flex items-center gap-1.5 text-[11px] text-slate-500">
+                <i data-lucide="lock" class="h-3.5 w-3.5 text-emerald-500"></i>
+                ข้อมูลของคุณถูกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น
+              </p>
+              <div class="flex items-center gap-2">
+                <button type="reset" id="reset-btn"
+                  class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                  <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+                  ล้างข้อมูล
+                </button>
+                <button type="submit" id="submit-btn"
+                  class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 sm:flex-none">
+                  <i data-lucide="send" class="h-4 w-4"></i>
+                  <span>ส่งคำขอแจ้งซ่อม</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- aside -->
+      <aside class="space-y-4 lg:sticky lg:top-24">
+        <!-- emergency -->
+        <div class="overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900 p-5 text-white shadow-card">
+          <div class="flex items-center gap-2 text-amber-300">
+            <i data-lucide="siren" class="h-5 w-5"></i>
+            <p class="text-sm font-semibold">เหตุฉุกเฉิน?</p>
+          </div>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">
+            กรณีไฟฟ้าลัดวงจร น้ำท่วม หรือลิฟต์ค้าง โทรแจ้งทันทีตลอด 24 ชั่วโมง
+          </p>
+          <a href="tel:021234567"
+            class="mt-4 flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-400">
+            <i data-lucide="phone-call" class="h-4 w-4"></i>
+            02-123-4567
+          </a>
+          <p class="mt-2.5 text-center text-[11px] text-slate-400">สายด่วนช่างเทคนิค · ไม่มีค่าใช้จ่ายในการโทร</p>
+        </div>
+
+        <!-- SLA -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 class="flex items-center gap-2 text-sm font-semibold text-slate-900">
+            <i data-lucide="gauge" class="h-4 w-4 text-blue-600"></i>
+            ระยะเวลาดำเนินการ (SLA)
+          </h3>
+          <ul class="mt-3 space-y-3 text-sm">
+            <li class="flex items-start justify-between gap-3">
+              <span class="flex items-center gap-2 text-slate-600"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>ปกติ</span>
+              <span class="font-medium text-slate-900">1–3 วันทำการ</span>
+            </li>
+            <li class="flex items-start justify-between gap-3">
+              <span class="flex items-center gap-2 text-slate-600"><span class="h-2 w-2 rounded-full bg-amber-500"></span>ด่วน</span>
+              <span class="font-medium text-slate-900">ภายใน 24 ชม.</span>
+            </li>
+            <li class="flex items-start justify-between gap-3">
+              <span class="flex items-center gap-2 text-slate-600"><span class="h-2 w-2 rounded-full bg-rose-500"></span>ฉุกเฉิน</span>
+              <span class="font-medium text-slate-900">ภายใน 2 ชม.</span>
+            </li>
+          </ul>
+          <div class="mt-4 rounded-xl bg-slate-50 p-3">
+            <p class="flex items-start gap-2 text-[11px] leading-relaxed text-slate-500">
+              <i data-lucide="info" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400"></i>
+              เวลาทำการ จันทร์–เสาร์ 08:00–18:00 น. นอกเวลาทำการเฉพาะเคสด่วนและฉุกเฉิน
+            </p>
+          </div>
+        </div>
+
+        <!-- tips -->
+        <div class="rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
+          <h3 class="flex items-center gap-2 text-sm font-semibold text-blue-900">
+            <i data-lucide="lightbulb" class="h-4 w-4 text-amber-500"></i>
+            เคล็ดลับการแจ้งซ่อม
+          </h3>
+          <ul class="mt-3 space-y-2.5 text-xs leading-relaxed text-blue-900/80">
+            <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-600"></i>ระบุห้องและอาคารให้ชัดเจน เพื่อให้ช่างไปถูกจุด</li>
+            <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-600"></i>แนบรูปภาพจะช่วยให้ประเมินอาการและเตรียมอะไหล่ได้เร็วขึ้น</li>
+            <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-600"></i>เก็บหมายเลขงานซ่อมไว้ เพื่อใช้ติดตามสถานะได้ตลอด</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Tracker ===== -->
+<section id="track" class="bg-slate-50 py-16 lg:py-24">
+  <div class="mx-auto max-w-7xl px-5 sm:px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-inset ring-slate-200">
+        <i data-lucide="radar" class="h-3.5 w-3.5 text-blue-600"></i>
+        ติดตามสถานะงานซ่อม
+      </span>
+      <h2 class="mt-4 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">งานซ่อมของคุณถึงขั้นตอนไหนแล้ว?</h2>
+      <p class="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+        กรอกหมายเลขงานซ่อมที่ได้รับหลังแจ้งซ่อม เพื่อดูความคืบหน้าแบบเรียลไทม์
+      </p>
+    </div>
+
+    <!-- search -->
+    <div class="mx-auto mt-8 max-w-2xl">
+      <form id="track-form" class="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-card sm:flex-row sm:items-center">
+        <div class="relative flex-1">
+          <span class="pointer-events-none absolute inset-y-0 left-0 grid w-11 place-items-center text-slate-400"><i data-lucide="scan-line" class="h-4 w-4"></i></span>
+          <input id="ticketInput" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+            placeholder="กรอกหมายเลขงาน เช่น REP-1001"
+            aria-label="หมายเลขงานซ่อม"
+            class="w-full rounded-xl border-0 bg-transparent py-3 pl-11 pr-3 font-mono text-sm uppercase tracking-wide text-slate-900 placeholder:font-sans placeholder:normal-case placeholder:tracking-normal focus:outline-none" />
+        </div>
+        <button type="submit"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+          <i data-lucide="search" class="h-4 w-4"></i>
+          ค้นหา
+        </button>
+      </form>
+
+      <div class="mt-2 flex flex-wrap items-center justify-between gap-2 px-1">
+        <p class="text-[11px] text-slate-500">
+          ลองค้นหาด้วยหมายเลขตัวอย่าง
+          <button type="button" data-demo-ticket="REP-1001" class="font-mono font-semibold text-blue-600 underline-offset-2 hover:underline">REP-1001</button>
+        </p>
+        <p id="ticket-count" class="text-[11px] text-slate-400"></p>
+      </div>
+
+      <p id="track-error" class="mt-3 hidden items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-medium text-rose-700">
+        <i data-lucide="circle-alert" class="h-4 w-4 shrink-0"></i>
+        <span id="track-error-text">ไม่พบหมายเลขงานซ่อมนี้ กรุณาตรวจสอบอีกครั้ง</span>
+      </p>
+    </div>
+
+    <!-- empty state -->
+    <div id="track-empty" class="mx-auto mt-8 max-w-3xl rounded-2xl border border-dashed border-slate-300 bg-white/70 px-6 py-12 text-center">
+      <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-400"><i data-lucide="file-search" class="h-6 w-6"></i></span>
+      <p class="mt-4 text-sm font-semibold text-slate-800">ยังไม่มีข้อมูลงานซ่อมที่ค้นหา</p>
+      <p class="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed text-slate-500">
+        กรอกหมายเลขงานซ่อมด้านบน หรือกดที่หมายเลขตัวอย่าง <span class="font-mono font-semibold text-slate-700">REP-1001</span> เพื่อทดลองใช้งาน
+      </p>
+    </div>
+
+    <!-- result -->
+    <div id="track-result" class="mx-auto mt-8 hidden max-w-4xl animate-pop-in">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+
+        <!-- summary header -->
+        <div class="flex flex-col gap-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <p id="result-ticket-id" class="font-mono text-lg font-semibold tracking-tight text-slate-900">REP-0000</p>
+              <span id="result-status-badge" class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"></span>
+            </div>
+            <p id="result-title" class="mt-2 truncate text-sm font-medium text-slate-800">—</p>
+            <p class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+              <span id="result-category" class="inline-flex items-center gap-1"><i data-lucide="tag" class="h-3.5 w-3.5"></i>—</span>
+              <span id="result-location" class="inline-flex items-center gap-1"><i data-lucide="map-pin" class="h-3.5 w-3.5"></i>—</span>
+              <span id="result-created" class="inline-flex items-center gap-1"><i data-lucide="calendar-clock" class="h-3.5 w-3.5"></i>—</span>
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2">
+            <button type="button" id="copy-result-id"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50">
+              <i data-lucide="copy" class="h-3.5 w-3.5"></i>
+              คัดลอกเลขงาน
+            </button>
+            <a href="#report"
+              class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium text-white transition hover:bg-slate-800">
+              <i data-lucide="plus" class="h-3.5 w-3.5"></i>
+              แจ้งซ่อมใหม่
+            </a>
+          </div>
+        </div>
+
+        <!-- stepper -->
+        <div class="p-5 sm:p-6">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold text-slate-900">ความคืบหน้างานซ่อม</h3>
+            <span id="result-updated" class="text-[11px] text-slate-400">—</span>
+          </div>
+
+          <ol id="stepper" class="mt-6 grid grid-cols-4 gap-1 sm:gap-2">
+            <!-- steps injected by JS -->
+          </ol>
+
+          <!-- progress bar (mobile-friendly linear indicator) -->
+          <div class="mt-6">
+            <div class="flex items-center justify-between text-[11px] font-medium text-slate-500">
+              <span>ความคืบหน้า</span>
+              <span id="result-progress-label" class="text-blue-600">0%</span>
+            </div>
+            <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div id="result-progress-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-700"></div>
+            </div>
+          </div>
+
+          <!-- detail grid -->
+          <div class="mt-6 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+              <p class="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400"><i data-lucide="user-round" class="h-3.5 w-3.5"></i>ผู้แจ้ง</p>
+              <p id="result-reporter" class="mt-1.5 text-sm font-medium text-slate-900">—</p>
+              <p id="result-contact" class="mt-0.5 text-xs text-slate-500">—</p>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+              <p class="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400"><i data-lucide="hard-hat" class="h-3.5 w-3.5"></i>ช่างผู้รับผิดชอบ</p>
+              <p id="result-technician" class="mt-1.5 text-sm font-medium text-slate-900">—</p>
+              <p id="result-urgency" class="mt-0.5 text-xs text-slate-500">—</p>
+            </div>
+          </div>
+
+          <!-- description -->
+          <div class="mt-3 rounded-xl border border-slate-200 p-4">
+            <p class="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>รายละเอียดปัญหา</p>
+            <p id="result-description" class="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-slate-700">—</p>
+            <div id="result-images" class="mt-3 hidden grid-cols-3 gap-2 sm:grid-cols-4"></div>
+          </div>
+
+          <!-- timeline -->
+          <div class="mt-3 rounded-xl border border-slate-200 p-4">
+            <p class="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400"><i data-lucide="history" class="h-3.5 w-3.5"></i>ประวัติการดำเนินการ</p>
+            <ul id="result-timeline" class="mt-3 space-y-3"></ul>
+          </div>
+
+          <p class="mt-4 flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-400">
+            <i data-lucide="info" class="mt-0.5 h-3.5 w-3.5 shrink-0"></i>
+            ข้อมูลสถานะเป็นตัวอย่างสำหรับ Prototype นี้ หากต้องการสอบถามเพิ่มเติมกรุณาโทร 02-123-4567
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== How it works ===== -->
+<section id="how-it-works" class="border-y border-slate-200 bg-white py-16 lg:py-24">
+  <div class="mx-auto max-w-7xl px-5 sm:px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <span class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-100">
+        <i data-lucide="route" class="h-3.5 w-3.5"></i>
+        ขั้นตอนการใช้งาน
+      </span>
+      <h2 class="mt-4 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">แจ้งซ่อมง่าย ๆ 3 ขั้นตอน</h2>
+      <p class="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+        ไม่ต้องโทรตาม ไม่ต้องเขียนเอกสาร ทุกอย่างจบได้ในหน้าเดียว
+      </p>
+    </div>
+
+    <div class="relative mt-12">
+      <!-- connector line (desktop) -->
+      <div class="pointer-events-none absolute left-0 right-0 top-10 hidden h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent lg:block"></div>
+
+      <ol class="grid gap-5 md:grid-cols-3 md:gap-6">
+        <!-- step 1 -->
+        <li class="reveal relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-card">
+          <div class="flex items-center justify-between">
+            <span class="grid h-12 w-12 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
+              <i data-lucide="file-pen-line" class="h-5 w-5"></i>
+            </span>
+            <span class="font-mono text-4xl font-semibold leading-none text-slate-100">01</span>
+          </div>
+          <h3 class="mt-5 text-base font-semibold text-slate-900">กรอกรายละเอียดปัญหา</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            เลือกหมวดหมู่ ระบุสถานที่และอาการที่พบ แนบรูปประกอบได้สูงสุด 3 รูป ใช้เวลาไม่ถึง 1 นาที
+          </p>
+          <p class="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-600">
+            <i data-lucide="timer" class="h-3.5 w-3.5 text-blue-600"></i>ใช้เวลา ~1 นาที
+          </p>
+        </li>
+
+        <!-- step 2 -->
+        <li class="reveal relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-card" style="transition-delay:80ms">
+          <div class="flex items-center justify-between">
+            <span class="grid h-12 w-12 place-items-center rounded-xl bg-amber-500 text-white shadow-lg shadow-amber-500/25">
+              <i data-lucide="ticket-check" class="h-5 w-5"></i>
+            </span>
+            <span class="font-mono text-4xl font-semibold leading-none text-slate-100">02</span>
+          </div>
+          <h3 class="mt-5 text-base font-semibold text-slate-900">รับหมายเลขงานซ่อม</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            ระบบออกเลขที่งานทันที เช่น REP-8492 พร้อมมอบหมายช่างผู้เชี่ยวชาญตามประเภทงานให้อัตโนมัติ
+          </p>
+          <p class="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-600">
+            <i data-lucide="zap" class="h-3.5 w-3.5 text-amber-500"></i>ออกเลขทันที
+          </p>
+        </li>
+
+        <!-- step 3 -->
+        <li class="reveal relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-card" style="transition-delay:160ms">
+          <div class="flex items-center justify-between">
+            <span class="grid h-12 w-12 place-items-center rounded-xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/25">
+              <i data-lucide="badge-check" class="h-5 w-5"></i>
+            </span>
+            <span class="font-mono text-4xl font-semibold leading-none text-slate-100">03</span>
+          </div>
+          <h3 class="mt-5 text-base font-semibold text-slate-900">ติดตามจนงานเสร็จ</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            ดูสถานะได้ทุกขั้นตอนตั้งแต่รับเรื่องจนปิดงาน พร้อมประวัติการดำเนินการที่ตรวจสอบย้อนหลังได้
+          </p>
+          <p class="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-600">
+            <i data-lucide="eye" class="h-3.5 w-3.5 text-emerald-600"></i>โปร่งใสทุกขั้นตอน
+          </p>
+        </li>
+      </ol>
+    </div>
+
+    <div class="mt-10 flex justify-center">
+      <a href="#report" class="group inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-400 hover:text-blue-700">
+        เริ่มแจ้งซ่อมเดี๋ยวนี้
+        <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Key features ===== -->
+<section id="features" class="bg-slate-50 py-16 lg:py-24">
+  <div class="mx-auto max-w-7xl px-5 sm:px-6">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_1.35fr] lg:items-start lg:gap-14">
+      <!-- intro -->
+      <div class="lg:sticky lg:top-24">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-inset ring-slate-200">
+          <i data-lucide="sparkles" class="h-3.5 w-3.5 text-amber-500"></i>
+          จุดเด่นของระบบ
+        </span>
+        <h2 class="mt-4 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          ทำไมอาคารจำนวนมาก<br class="hidden sm:block" />เลือกใช้ FixNow
+        </h2>
+        <p class="mt-3 max-w-md text-sm leading-relaxed text-slate-600 sm:text-base">
+          เราออกแบบระบบโดยฟังจากผู้ใช้งานจริงทั้งผู้พักอาศัย ผู้ดูแลอาคาร และทีมช่าง
+          เพื่อให้การซ่อมบำรุงเป็นเรื่องง่ายและตรวจสอบได้
+        </p>
+
+        <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-center gap-2 text-sm font-semibold text-slate-900">
+            <i data-lucide="trending-down" class="h-4 w-4 text-emerald-600"></i>
+            ผลลัพธ์หลังใช้งาน
+          </div>
+          <div class="mt-4 space-y-3">
+            <div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-600">ระยะเวลารอช่าง</span>
+                <span class="font-semibold text-slate-900">ลดลง 62%</span>
+              </div>
+              <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div class="h-full w-[38%] rounded-full bg-emerald-500"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-600">งานที่ปิดตรงเวลา</span>
+                <span class="font-semibold text-slate-900">เพิ่มขึ้น 96%</span>
+              </div>
+              <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div class="h-full w-[96%] rounded-full bg-blue-500"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-600">ข้อร้องเรียนซ้ำ</span>
+                <span class="font-semibold text-slate-900">ลดลง 45%</span>
+              </div>
+              <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div class="h-full w-[24%] rounded-full bg-amber-500"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- benefit cards -->
+      <div class="grid gap-4 sm:grid-cols-2">
+        <article class="reveal group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-card">
+          <span class="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-100 transition group-hover:bg-blue-600 group-hover:text-white">
+            <i data-lucide="monitor-smartphone" class="h-5 w-5"></i>
+          </span>
+          <h3 class="mt-4 text-base font-semibold text-slate-900">แจ้งซ่อมได้ทุกอุปกรณ์</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            รองรับมือถือ แท็บเล็ต และคอมพิวเตอร์ ไม่ต้องติดตั้งแอปเพิ่ม เปิดเบราว์เซอร์ก็ใช้งานได้ทันที
+          </p>
+        </article>
+
+        <article class="reveal group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-amber-200 hover:shadow-card" style="transition-delay:60ms">
+          <span class="grid h-11 w-11 place-items-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-inset ring-amber-100 transition group-hover:bg-amber-500 group-hover:text-white">
+            <i data-lucide="activity" class="h-5 w-5"></i>
+          </span>
+          <h3 class="mt-4 text-base font-semibold text-slate-900">ติดตามสถานะเรียลไทม์</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            เห็นทุกความเคลื่อนไหว ตั้งแต่รับเรื่อง มอบหมายช่าง กำลังซ่อม จนปิดงาน ไม่ต้องโทรถามซ้ำ
+          </p>
+        </article>
+        <article class="reveal group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-card" style="transition-delay:120ms">
+          <span class="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-100 transition group-hover:bg-emerald-500 group-hover:text-white">
+            <i data-lucide="shield-check" class="h-5 w-5"></i>
+          </span>
+          <h3 class="mt-4 text-base font-semibold text-slate-900">โปร่งใส ตรวจสอบได้</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            บันทึกทุกการดำเนินการพร้อมเวลาและผู้รับผิดชอบ มีประวัติย้อนหลังให้ผู้ดูแลอาคารตรวจสอบ
+          </p>
+        </article>
+
+        <article class="reveal group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-card" style="transition-delay:180ms">
+          <span class="grid h-11 w-11 place-items-center rounded-xl bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200 transition group-hover:bg-slate-900 group-hover:text-white">
+            <i data-lucide="users" class="h-5 w-5"></i>
+          </span>
+          <h3 class="mt-4 text-base font-semibold text-slate-900">ทีมช่างผู้เชี่ยวชาญ</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            ช่างทุกคนผ่านการตรวจสอบประสบการณ์และมีคะแนนความพึงพอใจ ให้คุณมั่นใจในคุณภาพงานซ่อม
+          </p>
+        </article>
+
+        <!-- mini CTA inside grid -->
+        <div class="reveal rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-white shadow-float sm:col-span-2">
+          <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+              <p class="text-sm font-semibold">พร้อมเริ่มใช้งานแล้วหรือยัง?</p>
+              <p class="mt-1 text-xs leading-relaxed text-blue-100">แจ้งซ่อมครั้งแรกของคุณได้ฟรี ไม่มีค่าใช้จ่ายในการเปิดงาน</p>
+            </div>
+            <a href="#report" class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-50">
+              <i data-lucide="wrench" class="h-4 w-4"></i>
+              เริ่มแจ้งซ่อม
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="bg-slate-900 text-slate-300">
+  <!-- emergency strip -->
+  <div class="border-b border-white/10 bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent">
+    <div class="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-5 py-6 sm:flex-row sm:items-center sm:px-6">
+      <div class="flex items-start gap-3">
+        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-500 text-slate-900">
+          <i data-lucide="phone-call" class="h-5 w-5"></i>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-white">สายด่วนซ่อมฉุกเฉิน (24 ชั่วโมง)</p>
+          <p class="mt-0.5 text-xs text-slate-400">ไฟฟ้าลัดวงจร · น้ำรั่วท่วม · ลิฟต์ค้าง · ประตูฉุกเฉินขัดข้อง</p>
+        </div>
+      </div>
+      <a href="tel:021234567" class="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-400">
+        <i data-lucide="phone" class="h-4 w-4"></i>
+        02-123-4567
+      </a>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:py-14">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <!-- brand -->
+      <div>
+        <a href="#top" class="flex items-center gap-2.5">
+          <span class="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white">
+            <i data-lucide="zap" class="h-5 w-5"></i>
+          </span>
+          <span class="leading-tight">
+            <span class="block text-lg font-semibold text-white">FixNow</span>
+            <span class="block text-[11px] text-slate-400">ระบบแจ้งซ่อมออนไลน์</span>
+          </span>
+        </a>
+        <p class="mt-4 max-w-xs text-xs leading-relaxed text-slate-400">
+          แพลตฟอร์มแจ้งซ่อมและบำรุงรักษาอาคารครบวงจร ช่วยให้ผู้อยู่อาศัยและทีมช่างสื่อสารกันได้อย่างมีประสิทธิภาพ
+        </p>
+        <div class="mt-5 flex items-center gap-2">
+          <a href="#" aria-label="Facebook" class="grid h-9 w-9 place-items-center rounded-lg bg-white/5 text-slate-400 transition hover:bg-white/10 hover:text-white"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.23.19 2.23.19v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.45 2.91h-2.33V22c4.78-.76 8.45-4.92 8.45-9.94Z"/></svg></a>
+          <a href="#" aria-label="LINE" class="grid h-9 w-9 place-items-center rounded-lg bg-white/5 text-slate-400 transition hover:bg-white/10 hover:text-white"><i data-lucide="message-circle" class="h-4 w-4"></i></a>
+          <a href="#" aria-label="อีเมล" class="grid h-9 w-9 place-items-center rounded-lg bg-white/5 text-slate-400 transition hover:bg-white/10 hover:text-white"><i data-lucide="mail" class="h-4 w-4"></i></a>
+        </div>
+      </div>
+      <!-- links -->
+      <div>
+        <h3 class="text-sm font-semibold text-white">เมนูลัด</h3>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a href="#features" class="text-slate-400 transition hover:text-white">จุดเด่นของระบบ</a></li>
+          <li><a href="#how-it-works" class="text-slate-400 transition hover:text-white">ขั้นตอนการใช้งาน</a></li>
+          <li><a href="#report" class="text-slate-400 transition hover:text-white">แจ้งซ่อมออนไลน์</a></li>
+          <li><a href="#track" class="text-slate-400 transition hover:text-white">ติดตามสถานะงานซ่อม</a></li>
+        </ul>
+      </div>
+
+      <!-- categories -->
+      <div>
+        <h3 class="text-sm font-semibold text-white">บริการของเรา</h3>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li class="flex items-center gap-2 text-slate-400"><i data-lucide="zap" class="h-3.5 w-3.5 text-amber-400"></i>งานไฟฟ้า</li>
+          <li class="flex items-center gap-2 text-slate-400"><i data-lucide="droplets" class="h-3.5 w-3.5 text-blue-400"></i>งานประปา</li>
+          <li class="flex items-center gap-2 text-slate-400"><i data-lucide="wind" class="h-3.5 w-3.5 text-cyan-400"></i>เครื่องปรับอากาศ</li>
+          <li class="flex items-center gap-2 text-slate-400"><i data-lucide="laptop" class="h-3.5 w-3.5 text-violet-400"></i>อุปกรณ์ไอที</li>
+          <li class="flex items-center gap-2 text-slate-400"><i data-lucide="building-2" class="h-3.5 w-3.5 text-emerald-400"></i>อาคารสถานที่</li>
+        </ul>
+      </div>
+
+      <!-- contact / hours -->
+      <div>
+        <h3 class="text-sm font-semibold text-white">ติดต่อและเวลาทำการ</h3>
+        <ul class="mt-4 space-y-3 text-sm">
+          <li class="flex items-start gap-2.5">
+            <i data-lucide="clock" class="mt-0.5 h-4 w-4 shrink-0 text-blue-400"></i>
+            <span class="text-slate-400">
+              <span class="block text-slate-200">จันทร์ – เสาร์</span>
+              08:00 – 18:00 น.
+            </span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <i data-lucide="siren" class="mt-0.5 h-4 w-4 shrink-0 text-amber-400"></i>
+            <span class="text-slate-400">
+              <span class="block text-slate-200">เคสด่วน / ฉุกเฉิน</span>
+              ให้บริการตลอด 24 ชั่วโมง
+            </span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <i data-lucide="mail" class="mt-0.5 h-4 w-4 shrink-0 text-slate-400"></i>
+            <a href="mailto:support@fixnow.co.th" class="text-slate-400 transition hover:text-white">support@fixnow.co.th</a>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <i data-lucide="map-pin" class="mt-0.5 h-4 w-4 shrink-0 text-slate-400"></i>
+            <span class="text-slate-400">อาคาร FixNow ชั้น 8 ถนนพระราม 9 กรุงเทพฯ 10310</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- bottom bar -->
+    <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 sm:flex-row">
+      <p class="text-xs text-slate-500">© <span id="year">2026</span> FixNow. สงวนลิขสิทธิ์ทั้งหมด</p>
+      <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
+        <a href="#" class="text-slate-500 transition hover:text-white">นโยบายความเป็นส่วนตัว</a>
+        <a href="#" class="text-slate-500 transition hover:text-white">ข้อกำหนดการให้บริการ</a>
+        <a href="#" class="text-slate-500 transition hover:text-white">ช่วยเหลือ</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== Success modal ===== -->
+<div id="success-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div id="modal-panel" class="relative w-full max-w-md animate-pop-in overflow-hidden rounded-2xl bg-white shadow-2xl">
+    <!-- top accent -->
+    <div class="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-blue-600"></div>
+
+    <button type="button" id="modal-close" aria-label="ปิดหน้าต่าง"
+      class="absolute right-3 top-4 grid h-9 w-9 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600">
+      <i data-lucide="x" class="h-4 w-4"></i>
+    </button>
+
+    <div class="p-6 pt-7 text-center">
+      <span class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-50 text-emerald-600 ring-8 ring-emerald-50/60">
+        <i data-lucide="check" class="h-8 w-8" stroke-width="2.5"></i>
+      </span>
+
+      <h3 id="modal-title" class="mt-5 text-lg font-semibold text-slate-900">ส่งคำขอแจ้งซ่อมสำเร็จ</h3>
+      <p class="mt-1.5 text-sm leading-relaxed text-slate-600">
+        ทีมช่างได้รับเรื่องของคุณแล้ว และจะติดต่อกลับภายใน 30 นาทีในเวลาทำการ
+      </p>
+
+      <!-- ticket id box -->
+      <div class="mt-5 rounded-xl border border-dashed border-blue-300 bg-blue-50/70 p-4">
+        <p class="text-[11px] font-medium uppercase tracking-wider text-blue-700">หมายเลขงานซ่อมของคุณ</p>
+        <p id="modal-ticket-id" class="mt-1 font-mono text-2xl font-semibold tracking-tight text-slate-900">REP-0000</p>
+
+        <div class="mt-3 flex items-center gap-2">
+          <button type="button" id="copy-ticket-btn"
+            class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-white px-3 py-2.5 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-200 transition hover:bg-blue-50">
+            <i data-lucide="copy" class="h-3.5 w-3.5"></i>
+            <span id="copy-ticket-label">คัดลอกหมายเลข</span>
+          </button>
+          <button type="button" id="view-ticket-btn"
+            class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-blue-700">
+            <i data-lucide="search-check" class="h-3.5 w-3.5"></i>
+            ดูสถานะเลย
+          </button>
+        </div>
+      </div>
+
+      <!-- summary -->
+      <dl class="mt-4 space-y-1.5 rounded-xl bg-slate-50 p-3.5 text-left text-xs">
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-500">หมวดหมู่</dt>
+          <dd id="modal-category" class="text-right font-medium text-slate-800">—</dd>
+        </div>
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-500">สถานที่</dt>
+          <dd id="modal-location" class="max-w-[62%] text-right font-medium text-slate-800">—</dd>
+        </div>
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-500">ความเร่งด่วน</dt>
+          <dd id="modal-urgency" class="text-right font-medium text-slate-800">—</dd>
+        </div>
+      </dl>
+
+      <p class="mt-3 flex items-start gap-1.5 text-left text-[11px] leading-relaxed text-slate-400">
+        <i data-lucide="info" class="mt-0.5 h-3.5 w-3.5 shrink-0"></i>
+        กรุณาเก็บหมายเลขนี้ไว้ใช้ติดตามสถานะ ข้อมูลถูกบันทึกไว้ในเบราว์เซอร์ของคุณ
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast-wrap" class="pointer-events-none fixed bottom-5 left-1/2 z-[80] flex w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 flex-col items-stretch gap-2"></div>
+
+<script>
+  /* ============================================================
+     FixNow — Online Maintenance & Repair Request System
+     Prototype logic: localStorage-backed ticket store
+     ============================================================ */
+  (function () {
+    'use strict';
+
+    /* ---------- Constants ---------- */
+    const STORAGE_KEY = 'fixnow_tickets_v1';
+    const DEMO_TICKET_ID = 'REP-1001';
+    const MAX_IMAGES = 3;
+    const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+    const MAX_IMAGE_DIMENSION = 900;
+
+    const STEPS = [
+      { label: 'รับเรื่อง', icon: 'clipboard-check', hint: 'ระบบได้รับคำขอของคุณแล้ว' },
+      { label: 'มอบหมายช่าง', icon: 'user-check', hint: 'มอบหมายช่างผู้รับผิดชอบแล้ว' },
+      { label: 'กำลังซ่อม', icon: 'wrench', hint: 'ช่างกำลังดำเนินการซ่อมอยู่' },
+      { label: 'เสร็จสิ้น', icon: 'badge-check', hint: 'ซ่อมเสร็จเรียบร้อยและปิดงานแล้ว' }
+    ];
+
+    const STATUS_STYLES = [
+      { name: 'รับเรื่อง', pill: 'bg-blue-50 text-blue-700 ring-blue-200', dot: 'bg-blue-500' },
+      { name: 'มอบหมายช่าง', pill: 'bg-indigo-50 text-indigo-700 ring-indigo-200', dot: 'bg-indigo-500' },
+      { name: 'กำลังซ่อม', pill: 'bg-amber-50 text-amber-700 ring-amber-200', dot: 'bg-amber-500' },
+      { name: 'เสร็จสิ้น', pill: 'bg-emerald-50 text-emerald-700 ring-emerald-200', dot: 'bg-emerald-500' }
+    ];
+
+    const TECHNICIANS = {
+      'ไฟฟ้า': 'ช่างวิชัย · ช่างไฟฟ้า',
+      'ประปา': 'ช่างประสิทธิ์ · ช่างประปา',
+      'เครื่องปรับอากาศ': 'ช่างสมชาย · ช่างแอร์',
+      'อุปกรณ์ไอที': 'ช่างณัฐพล · ช่างไอที',
+      'อาคารสถานที่': 'ช่างอนุชา · ช่างอาคาร'
+    };
+
+    /* ---------- Element helpers ---------- */
+    const $ = (sel, root) => (root || document).querySelector(sel);
+    const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+    const icon = (name, cls) => '<i data-lucide="' + name + '" class="' + cls + '"></i>';
+    const refreshIcons = () => { if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons(); };
+
+    const escapeHtml = (value) => String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    /* ---------- Date helpers (Thai locale) ---------- */
+    const dateTimeFmt = new Intl.DateTimeFormat('th-TH', {
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    const shortDateFmt = new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+
+    const formatDateTime = (iso) => {
+      const d = new Date(iso);
+      return isNaN(d.getTime()) ? '—' : dateTimeFmt.format(d) + ' น.';
+    };
+    const formatShort = (iso) => {
+      const d = new Date(iso);
+      return isNaN(d.getTime()) ? '—' : shortDateFmt.format(d);
+    };
+    const relativeTime = (iso) => {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '—';
+      const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+      if (diff < 60) return 'เมื่อสักครู่';
+      if (diff < 3600) return Math.floor(diff / 60) + ' นาทีที่แล้ว';
+      if (diff < 86400) return Math.floor(diff / 3600) + ' ชั่วโมงที่แล้ว';
+      if (diff < 604800) return Math.floor(diff / 86400) + ' วันที่แล้ว';
+      return formatShort(iso);
+    };
+    /* ---------- Storage layer ---------- */
+    function readTickets() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        console.warn('[FixNow] อ่านข้อมูลจาก localStorage ไม่สำเร็จ', err);
+        return [];
+      }
+    }
+
+    function writeTickets(tickets) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+        return true;
+      } catch (err) {
+        console.warn('[FixNow] บันทึกข้อมูลไม่สำเร็จ (พื้นที่เก็บข้อมูลอาจเต็ม)', err);
+        // Retry without image payloads so the ticket itself is never lost.
+        try {
+          const slim = tickets.map((t) => Object.assign({}, t, { images: [] }));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+          showToast('พื้นที่จัดเก็บเต็ม — บันทึกคำขอแล้ว แต่ไม่ได้เก็บรูปภาพ', 'amber');
+          return true;
+        } catch (err2) {
+          showToast('ไม่สามารถบันทึกข้อมูลได้ กรุณาล้างข้อมูลเบราว์เซอร์แล้วลองใหม่', 'rose');
+          return false;
+        }
+      }
+    }
+
+    function findTicket(id) {
+      const normalized = normalizeTicketId(id);
+      const tickets = readTickets();
+      for (let i = 0; i < tickets.length; i += 1) {
+        if (String(tickets[i].id).toUpperCase() === normalized) return tickets[i];
+      }
+      return null;
+    }
+
+    /* ---------- Demo seed (REP-1001) ---------- */
+    function seedDemoTicket() {
+      const tickets = readTickets();
+      const exists = tickets.some((t) => String(t.id).toUpperCase() === DEMO_TICKET_ID);
+      if (exists) return;
+
+      const now = Date.now();
+      const created = new Date(now - 26 * 60 * 60 * 1000).toISOString();
+      const assigned = new Date(now - 25 * 60 * 60 * 1000).toISOString();
+      const working = new Date(now - 2 * 60 * 60 * 1000).toISOString();
+
+      tickets.push({
+        id: DEMO_TICKET_ID,
+        reporterName: 'คุณกานดา วัฒนกุล',
+        contact: '081-234-5678',
+        category: 'เครื่องปรับอากาศ',
+        location: 'อาคาร A ชั้น 12 ห้อง 1204',
+        description: 'เครื่องปรับอากาศมีเสียงดังผิดปกติและลมไม่เย็น เริ่มเป็นตั้งแต่เมื่อวานช่วงบ่าย ' +
+          'ปรับอุณหภูมิแล้วแต่อากาศยังร้อน ผู้ใช้งานในห้องประชุมแจ้งว่าอากาศอบอ้าว',
+        urgency: 'ด่วน',
+        images: [],
+        status: 2,
+        technician: 'ช่างสมชาย · ช่างแอร์',
+        createdAt: created,
+        updatedAt: working,
+        timeline: [
+          { status: 0, at: created, note: 'ได้รับคำขอแจ้งซ่อมผ่านระบบออนไลน์' },
+          { status: 1, at: assigned, note: 'มอบหมายช่างสมชายเข้าตรวจสอบหน้างาน' },
+          { status: 2, at: working, note: 'ช่างถึงหน้างานและกำลังตรวจเช็กระบบทำความเย็น' }
+        ]
+      });
+
+      writeTickets(tickets);
+    }
+
+    /* ---------- Ticket id helpers ---------- */
+    function normalizeTicketId(raw) {
+      let value = String(raw || '').trim().toUpperCase().replace(/\s+/g, '');
+      if (!value) return '';
+      if (/^\d+$/.test(value)) value = 'REP-' + value;
+      return value;
+    }
+
+    function generateTicketId() {
+      const existing = {};
+      readTickets().forEach((t) => { existing[String(t.id).toUpperCase()] = true; });
+      let candidate = '';
+      let guard = 0;
+      do {
+        candidate = 'REP-' + Math.floor(1000 + Math.random() * 9000);
+        guard += 1;
+      } while (existing[candidate] && guard < 80);
+      return candidate;
+    }
+    /* ---------- Toast ---------- */
+    const TOAST_THEMES = {
+      emerald: { wrap: 'border-emerald-200 bg-white text-emerald-800', icon: 'check-circle-2', iconCls: 'text-emerald-600' },
+      amber: { wrap: 'border-amber-200 bg-white text-amber-800', icon: 'alert-triangle', iconCls: 'text-amber-500' },
+      rose: { wrap: 'border-rose-200 bg-white text-rose-800', icon: 'circle-alert', iconCls: 'text-rose-500' },
+      blue: { wrap: 'border-blue-200 bg-white text-blue-800', icon: 'info', iconCls: 'text-blue-600' }
+    };
+
+    function showToast(message, themeName) {
+      const wrap = $('#toast-wrap');
+      if (!wrap) return;
+      const theme = TOAST_THEMES[themeName] || TOAST_THEMES.emerald;
+
+      const el = document.createElement('div');
+      el.className = 'pointer-events-auto flex items-start gap-2.5 rounded-xl border ' + theme.wrap +
+        ' px-3.5 py-3 shadow-card animate-toast-in';
+      el.innerHTML = icon(theme.icon, 'h-4 w-4 shrink-0 ' + theme.iconCls) +
+        '<p class="flex-1 text-xs font-medium leading-relaxed">' + escapeHtml(message) + '</p>' +
+        '<button type="button" class="shrink-0 rounded p-0.5 text-slate-400 transition hover:text-slate-700" aria-label="ปิด">' +
+        icon('x', 'h-3.5 w-3.5') + '</button>';
+
+      const dismiss = () => {
+        el.style.transition = 'opacity .2s ease, transform .2s ease';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        setTimeout(() => el.remove(), 210);
+      };
+      el.querySelector('button').addEventListener('click', dismiss);
+      wrap.appendChild(el);
+      refreshIcons();
+      setTimeout(dismiss, 4200);
+    }
+
+    /* ---------- Clipboard ---------- */
+    function copyText(text) {
+      const value = String(text || '');
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(value).then(() => true).catch(() => fallbackCopy(value));
+      }
+      return Promise.resolve(fallbackCopy(value));
+    }
+
+    function fallbackCopy(value) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = value;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, value.length);
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    /* ---------- Modal ---------- */
+    let lastFocused = null;
+
+    function openModal(ticket) {
+      const modal = $('#success-modal');
+      if (!modal) return;
+      $('#modal-ticket-id').textContent = ticket.id;
+      $('#modal-category').textContent = ticket.category;
+      $('#modal-location').textContent = ticket.location;
+      $('#modal-urgency').textContent = ticket.urgency;
+      const label = $('#copy-ticket-label');
+      if (label) label.textContent = 'คัดลอกหมายเลข';
+
+      lastFocused = document.activeElement;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.classList.add('modal-open');
+      setTimeout(() => { const btn = $('#copy-ticket-btn'); if (btn) btn.focus(); }, 60);
+    }
+
+    function closeModal() {
+      const modal = $('#success-modal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.classList.remove('modal-open');
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+    /* ---------- Image handling ---------- */
+    let selectedImages = []; // [{ name, dataUrl }]
+
+    function renderPreviews() {
+      const grid = $('#previewGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      if (!selectedImages.length) {
+        grid.classList.add('hidden');
+        grid.classList.remove('grid');
+        return;
+      }
+
+      grid.classList.remove('hidden');
+      grid.classList.add('grid');
+
+      selectedImages.forEach((img, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100';
+        cell.innerHTML =
+          '<img src="' + img.dataUrl + '" alt="' + escapeHtml(img.name) + '" class="h-full w-full object-cover" />' +
+          '<div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900/80 to-transparent p-1.5">' +
+          '<p class="truncate text-[10px] font-medium text-white">' + escapeHtml(img.name) + '</p></div>' +
+          '<button type="button" aria-label="ลบรูปภาพ" ' +
+          'class="js-remove-image absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-white/95 text-slate-700 shadow-sm transition hover:bg-rose-600 hover:text-white">' +
+          icon('x', 'h-3.5 w-3.5') + '</button>';
+
+        cell.querySelector('.js-remove-image').addEventListener('click', () => {
+          selectedImages.splice(index, 1);
+          syncImageInput();
+          renderPreviews();
+        });
+
+        grid.appendChild(cell);
+      });
+
+      refreshIcons();
+    }
+
+    function syncImageInput() {
+      const input = $('#imageInput');
+      if (input) input.value = '';
+      if (!selectedImages.length) {
+        const err = $('#image-error');
+        if (err) { err.classList.add('hidden'); err.textContent = ''; }
+      }
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = String(reader.result);
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(img.width, img.height));
+            if (scale >= 1 && dataUrl.length < 320000) { resolve(dataUrl); return; }
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.round(img.width * scale);
+              canvas.height = Math.round(img.height * scale);
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL('image/jpeg', 0.72));
+            } catch (err) {
+              resolve(dataUrl);
+            }
+          };
+          img.onerror = () => resolve(dataUrl);
+          img.src = dataUrl;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleFiles(fileList) {
+      const errEl = $('#image-error');
+      const setError = (msg) => {
+        if (!errEl) return;
+        errEl.textContent = msg || '';
+        errEl.classList.toggle('hidden', !msg);
+      };
+      setError('');
+
+      const files = Array.prototype.slice.call(fileList || []);
+      if (!files.length) return;
+
+      for (let i = 0; i < files.length; i += 1) {
+        if (selectedImages.length >= MAX_IMAGES) {
+          setError('แนบรูปภาพได้สูงสุด ' + MAX_IMAGES + ' รูป');
+          break;
+        }
+        const file = files[i];
+        if (!file.type || file.type.indexOf('image/') !== 0) {
+          setError('ไฟล์ "' + file.name + '" ไม่ใช่รูปภาพ');
+          continue;
+        }
+        if (file.size > MAX_IMAGE_BYTES) {
+          setError('ไฟล์ "' + file.name + '" มีขนาดเกิน 5 MB');
+          continue;
+        }
+        const dataUrl = await compressImage(file);
+        if (dataUrl) selectedImages.push({ name: file.name, dataUrl: dataUrl });
+      }
+
+      syncImageInput();
+      renderPreviews();
+      if (selectedImages.length) showToast('แนบรูปภาพแล้ว ' + selectedImages.length + ' รูป', 'blue');
+    }
+    /* ---------- Form validation ---------- */
+    const FIELDS = [
+      { id: 'reporterName', message: 'กรุณากรอกชื่อผู้แจ้ง' },
+      { id: 'contact', message: 'กรุณากรอกเบอร์โทรหรือ LINE ID' },
+      { id: 'category', message: 'กรุณาเลือกหมวดหมู่งานซ่อม' },
+      { id: 'location', message: 'กรุณาระบุสถานที่หรือห้องที่พบปัญหา' },
+      { id: 'description', message: 'กรุณาอธิบายรายละเอียดปัญหาที่พบ' }
+    ];
+
+    const fieldErrorEl = (id) => document.querySelector('[data-error-for="' + id + '"]');
+
+    function setFieldError(id, message) {
+      const el = document.getElementById(id);
+      const errEl = fieldErrorEl(id);
+      if (errEl) {
+        errEl.textContent = message || '';
+        errEl.classList.toggle('hidden', !message);
+      }
+      if (el) {
+        el.classList.toggle('border-rose-400', !!message);
+        el.classList.toggle('focus:border-rose-500', !!message);
+        el.classList.toggle('border-slate-300', !message);
+        el.classList.toggle('focus:border-blue-500', !message);
+        el.setAttribute('aria-invalid', message ? 'true' : 'false');
+      }
+    }
+
+    function validateForm() {
+      let firstInvalid = null;
+
+      FIELDS.forEach((field) => {
+        const el = document.getElementById(field.id);
+        if (!el) return;
+        const value = String(el.value || '').trim();
+        let message = '';
+        if (!value) message = field.message;
+        else if (field.id === 'contact' && value.length < 5) message = 'ข้อมูลติดต่อสั้นเกินไป กรุณาตรวจสอบอีกครั้ง';
+        else if (field.id === 'description' && value.length < 10) message = 'กรุณาอธิบายปัญหาให้ละเอียดอย่างน้อย 10 ตัวอักษร';
+        setFieldError(field.id, message);
+        if (message && !firstInvalid) firstInvalid = el;
+      });
+
+      const consent = $('#consent');
+      const consentErr = fieldErrorEl('consent');
+      if (consent && !consent.checked) {
+        if (consentErr) {
+          consentErr.textContent = 'กรุณายืนยันการยินยอมก่อนส่งคำขอ';
+          consentErr.classList.remove('hidden');
+        }
+        if (!firstInvalid) firstInvalid = consent;
+      } else if (consentErr) {
+        consentErr.classList.add('hidden');
+        consentErr.textContent = '';
+      }
+
+      if (firstInvalid) {
+        try { firstInvalid.focus({ preventScroll: true }); } catch (e) { firstInvalid.focus(); }
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        showToast('กรุณากรอกข้อมูลให้ครบถ้วนก่อนส่ง', 'rose');
+      }
+
+      return !firstInvalid;
+    }
+    /* ---------- Submit handler ---------- */
+    function handleSubmit(event) {
+      event.preventDefault();
+      if (!validateForm()) return;
+
+      const btn = $('#submit-btn');
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = icon('loader-circle', 'h-4 w-4 animate-spin') + '<span>กำลังส่งข้อมูล...</span>';
+      refreshIcons();
+
+      // Small delay to mimic a network round-trip and show the loading state.
+      setTimeout(() => {
+        const nowIso = new Date().toISOString();
+        const urgencyInput = document.querySelector('input[name="urgency"]:checked');
+
+        const ticket = {
+          id: generateTicketId(),
+          reporterName: $('#reporterName').value.trim(),
+          contact: $('#contact').value.trim(),
+          category: $('#category').value,
+          location: $('#location').value.trim(),
+          description: $('#description').value.trim(),
+          urgency: urgencyInput ? urgencyInput.value : 'ปกติ',
+          images: selectedImages.map((img) => img.dataUrl),
+          status: 0,
+          technician: 'รอการมอบหมาย',
+          createdAt: nowIso,
+          updatedAt: nowIso,
+          timeline: [{ status: 0, at: nowIso, note: 'ได้รับคำขอแจ้งซ่อมผ่านระบบออนไลน์' }]
+        };
+
+        const tickets = readTickets();
+        tickets.push(ticket);
+        const saved = writeTickets(tickets);
+
+        btn.disabled = false;
+        btn.innerHTML = original;
+        refreshIcons();
+
+        if (!saved) return;
+
+        openModal(ticket);
+        showToast('สร้างงานซ่อม ' + ticket.id + ' เรียบร้อยแล้ว', 'emerald');
+
+        // Reset the form for the next submission.
+        $('#repair-form').reset();
+        selectedImages = [];
+        syncImageInput();
+        renderPreviews();
+        $$('[data-error-for]').forEach((el) => { el.classList.add('hidden'); el.textContent = ''; });
+        const counter = $('#desc-counter');
+        if (counter) counter.textContent = '0 / 500';
+        updateTicketCount();
+      }, 520);
+    }
+    /* ---------- Stepper rendering ---------- */
+    function renderStepper(status) {
+      const list = $('#stepper');
+      if (!list) return;
+      list.innerHTML = '';
+
+      STEPS.forEach((step, index) => {
+        const isDone = index < status;
+        const isCurrent = index === status;
+        const isLast = index === STEPS.length - 1;
+
+        const circleCls = isDone
+          ? 'bg-blue-600 border-blue-600 text-white'
+          : isCurrent
+            ? 'bg-white border-blue-600 text-blue-600 ring-4 ring-blue-500/15'
+            : 'bg-white border-slate-200 text-slate-300';
+        const labelCls = isDone || isCurrent ? 'text-slate-900' : 'text-slate-400';
+        const sublabelCls = isCurrent ? 'text-blue-600' : isDone ? 'text-emerald-600' : 'text-slate-400';
+        const sublabel = isCurrent ? 'กำลังดำเนินการ' : isDone ? 'เสร็จแล้ว' : 'รอดำเนินการ';
+
+        const li = document.createElement('li');
+        li.className = 'relative flex flex-col items-center text-center';
+        li.innerHTML =
+          (isLast ? '' :
+            '<span class="absolute left-1/2 top-5 h-0.5 w-full ' + (isDone ? 'bg-blue-500' : 'bg-slate-200') + '" aria-hidden="true"></span>') +
+          '<span class="relative z-10 grid h-10 w-10 place-items-center rounded-full border-2 ' + circleCls +
+          (isCurrent ? ' animate-soft-pulse' : '') + '">' +
+          icon(isDone ? 'check' : step.icon, 'h-4 w-4') + '</span>' +
+          '<span class="mt-2.5 px-0.5 text-[11px] font-semibold leading-tight sm:text-xs ' + labelCls + '">' + escapeHtml(step.label) + '</span>' +
+          '<span class="mt-0.5 hidden text-[10px] font-medium sm:block ' + sublabelCls + '">' + sublabel + '</span>';
+
+        list.appendChild(li);
+      });
+
+      refreshIcons();
+    }
+
+    function renderTimeline(ticket) {
+      const list = $('#result-timeline');
+      if (!list) return;
+      const items = Array.isArray(ticket.timeline) ? ticket.timeline.slice().reverse() : [];
+      list.innerHTML = '';
+
+      if (!items.length) {
+        list.innerHTML = '<li class="text-xs text-slate-400">ยังไม่มีประวัติการดำเนินการ</li>';
+        return;
+      }
+
+      items.forEach((item, index) => {
+        const style = STATUS_STYLES[item.status] || STATUS_STYLES[0];
+        const li = document.createElement('li');
+        li.className = 'relative flex gap-3';
+        li.innerHTML =
+          '<span class="mt-1 flex flex-col items-center">' +
+          '<span class="h-2.5 w-2.5 shrink-0 rounded-full ' + style.dot + (index === 0 ? ' ring-4 ring-slate-100' : '') + '"></span>' +
+          (index < items.length - 1 ? '<span class="mt-1 w-px flex-1 bg-slate-200"></span>' : '') +
+          '</span>' +
+          '<span class="min-w-0 pb-1">' +
+          '<span class="block text-xs font-medium text-slate-800">' + escapeHtml(item.note || style.name) + '</span>' +
+          '<span class="mt-0.5 block text-[11px] text-slate-400">' + formatDateTime(item.at) + '</span>' +
+          '</span>';
+        list.appendChild(li);
+      });
+    }
+
+    function renderImages(ticket) {
+      const grid = $('#result-images');
+      if (!grid) return;
+      const images = Array.isArray(ticket.images) ? ticket.images : [];
+      grid.innerHTML = '';
+      if (!images.length) {
+        grid.classList.add('hidden');
+        grid.classList.remove('grid');
+        return;
+      }
+      grid.classList.remove('hidden');
+      grid.classList.add('grid');
+      images.forEach((src, i) => {
+        const a = document.createElement('a');
+        a.href = src;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.className = 'block aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100';
+        a.innerHTML = '<img src="' + src + '" alt="รูปประกอบ ' + (i + 1) + '" class="h-full w-full object-cover transition hover:scale-105" />';
+        grid.appendChild(a);
+      });
+    }
+    /* ---------- Tracker ---------- */
+    let activeTicketId = null;
+
+    function updateTicketCount() {
+      const el = $('#ticket-count');
+      if (!el) return;
+      const count = readTickets().length;
+      el.textContent = count ? 'มีงานซ่อมในระบบ ' + count + ' รายการ' : '';
+    }
+
+    function hideTrackError() {
+      const err = $('#track-error');
+      if (err) { err.classList.add('hidden'); err.classList.remove('flex'); }
+    }
+
+    function showTrackError(message) {
+      const err = $('#track-error');
+      const text = $('#track-error-text');
+      if (text) text.textContent = message;
+      if (err) { err.classList.remove('hidden'); err.classList.add('flex'); }
+    }
+
+    function renderTicket(ticket) {
+      const result = $('#track-result');
+      const empty = $('#track-empty');
+      if (!result) return;
+
+      const status = Math.max(0, Math.min(STEPS.length - 1, Number(ticket.status) || 0));
+      const style = STATUS_STYLES[status];
+
+      $('#result-ticket-id').textContent = ticket.id;
+      $('#result-title').textContent = ticket.description;
+
+      const badge = $('#result-status-badge');
+      badge.className = 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ' + style.pill;
+      badge.innerHTML = '<span class="h-1.5 w-1.5 rounded-full ' + style.dot + '"></span>' + style.name;
+
+      $('#result-category').innerHTML = icon('tag', 'h-3.5 w-3.5') + escapeHtml(ticket.category || '—');
+      $('#result-location').innerHTML = icon('map-pin', 'h-3.5 w-3.5') + escapeHtml(ticket.location || '—');
+      $('#result-created').innerHTML = icon('calendar-clock', 'h-3.5 w-3.5') + escapeHtml(formatDateTime(ticket.createdAt));
+      $('#result-updated').textContent = 'อัปเดต ' + relativeTime(ticket.updatedAt || ticket.createdAt);
+
+      $('#result-reporter').textContent = ticket.reporterName || '—';
+      $('#result-contact').textContent = ticket.contact || '—';
+      $('#result-technician').textContent = ticket.technician || 'รอการมอบหมาย';
+      $('#result-urgency').textContent = 'ความเร่งด่วน: ' + (ticket.urgency || 'ปกติ');
+      $('#result-description').textContent = ticket.description || '—';
+
+      renderStepper(status);
+      renderTimeline(ticket);
+      renderImages(ticket);
+
+      const percent = Math.round(((status + 1) / STEPS.length) * 100);
+      const bar = $('#result-progress-bar');
+      const label = $('#result-progress-label');
+      if (bar) { bar.style.width = '0%'; setTimeout(() => { bar.style.width = percent + '%'; }, 60); }
+      if (label) label.textContent = percent + '% · ' + STEPS[status].label;
+
+      activeTicketId = ticket.id;
+      if (empty) empty.classList.add('hidden');
+      result.classList.remove('hidden');
+      refreshIcons();
+    }
+
+    function searchTicket(rawId, options) {
+      const opts = options || {};
+      const id = normalizeTicketId(rawId);
+      hideTrackError();
+
+      if (!id) {
+        showTrackError('กรุณากรอกหมายเลขงานซ่อมก่อนค้นหา');
+        if (!opts.silent) showToast('กรุณากรอกหมายเลขงานซ่อม', 'amber');
+        return false;
+      }
+
+      const ticket = findTicket(id);
+      if (!ticket) {
+        showTrackError('ไม่พบหมายเลขงานซ่อม "' + id + '" กรุณาตรวจสอบอีกครั้ง หรือลองใช้ REP-1001');
+        const result = $('#track-result');
+        const empty = $('#track-empty');
+        if (result) result.classList.add('hidden');
+        if (empty) empty.classList.remove('hidden');
+        if (!opts.silent) showToast('ไม่พบหมายเลขงานซ่อมนี้ในระบบ', 'rose');
+        return false;
+      }
+
+      const input = $('#ticketInput');
+      if (input) input.value = ticket.id;
+      renderTicket(ticket);
+
+      if (opts.scroll) {
+        const section = $('#track');
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return true;
+    }
+    /* ---------- Event wiring ---------- */
+    function bindEvents() {
+      /* Form submit / reset */
+      const form = $('#repair-form');
+      if (form) {
+        form.addEventListener('submit', handleSubmit);
+        form.addEventListener('reset', () => {
+          setTimeout(() => {
+            selectedImages = [];
+            syncImageInput();
+            renderPreviews();
+            $$('[data-error-for]').forEach((el) => { el.classList.add('hidden'); el.textContent = ''; });
+            FIELDS.forEach((f) => setFieldError(f.id, ''));
+            const counter = $('#desc-counter');
+            if (counter) counter.textContent = '0 / 500';
+            showToast('ล้างข้อมูลในแบบฟอร์มแล้ว', 'blue');
+          }, 0);
+        });
+      }
+
+      /* Live validation clearing */
+      FIELDS.forEach((field) => {
+        const el = document.getElementById(field.id);
+        if (!el) return;
+        const clear = () => { if (String(el.value || '').trim()) setFieldError(field.id, ''); };
+        el.addEventListener('input', clear);
+        el.addEventListener('change', clear);
+      });
+
+      const consent = $('#consent');
+      if (consent) {
+        consent.addEventListener('change', () => {
+          const err = fieldErrorEl('consent');
+          if (consent.checked && err) { err.classList.add('hidden'); err.textContent = ''; }
+        });
+      }
+
+      /* Description counter */
+      const desc = $('#description');
+      const counter = $('#desc-counter');
+      if (desc && counter) {
+        const sync = () => { counter.textContent = desc.value.length + ' / 500'; };
+        desc.addEventListener('input', sync);
+        sync();
+      }
+
+      /* Image upload */
+      const input = $('#imageInput');
+      const dropzone = $('#dropzone');
+      if (input) input.addEventListener('change', (e) => handleFiles(e.target.files));
+
+      if (dropzone) {
+        ['dragenter', 'dragover'].forEach((evt) => {
+          dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-blue-500', 'bg-blue-50', 'scale-[1.01]');
+          });
+        });
+        ['dragleave', 'drop'].forEach((evt) => {
+          dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-blue-500', 'bg-blue-50', 'scale-[1.01]');
+          });
+        });
+        dropzone.addEventListener('drop', (e) => {
+          if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+        });
+      }
+
+      /* Tracker */
+      const trackForm = $('#track-form');
+      if (trackForm) {
+        trackForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          searchTicket($('#ticketInput').value, { silent: false });
+        });
+      }
+      const ticketInput = $('#ticketInput');
+      if (ticketInput) {
+        ticketInput.addEventListener('input', (e) => {
+          const pos = e.target.selectionStart;
+          const upper = e.target.value.toUpperCase();
+          if (upper !== e.target.value) {
+            e.target.value = upper;
+            try { e.target.setSelectionRange(pos, pos); } catch (err) { /* noop */ }
+          }
+        });
+        ticketInput.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideTrackError(); });
+      }
+
+      $$('[data-demo-ticket]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-demo-ticket');
+          const inputEl = $('#ticketInput');
+          if (inputEl) inputEl.value = id;
+          searchTicket(id, { silent: true });
+        });
+      });
+
+      /* Copy from tracker */
+      const copyResultBtn = $('#copy-result-id');
+      if (copyResultBtn) {
+        copyResultBtn.addEventListener('click', () => {
+          if (!activeTicketId) return;
+          copyText(activeTicketId).then((ok) => {
+            showToast(ok ? 'คัดลอกหมายเลข ' + activeTicketId + ' แล้ว' : 'คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง', ok ? 'emerald' : 'rose');
+          });
+        });
+      }
+
+      /* Auto-load the demo ticket so the tracker is never empty on first visit */
+      const params = new URLSearchParams(window.location.search);
+      const fromQuery = params.get('ticket');
+      if (fromQuery) searchTicket(fromQuery, { silent: true });
+    }
+
+    /* ---------- Modal & chrome wiring ---------- */
+    function bindChrome() {
+      const modal = $('#success-modal');
+      if (modal) {
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+      }
+      const closeBtn = $('#modal-close');
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+      const copyBtn = $('#copy-ticket-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const id = $('#modal-ticket-id').textContent.trim();
+          copyText(id).then((ok) => {
+            const label = $('#copy-ticket-label');
+            if (ok && label) {
+              label.textContent = 'คัดลอกแล้ว!';
+              setTimeout(() => { label.textContent = 'คัดลอกหมายเลข'; }, 2000);
+            }
+            showToast(ok ? 'คัดลอกหมายเลข ' + id + ' ไปยังคลิปบอร์ดแล้ว' : 'คัดลอกไม่สำเร็จ กรุณาจดหมายเลขไว้', ok ? 'emerald' : 'rose');
+          });
+        });
+      }
+
+      const viewBtn = $('#view-ticket-btn');
+      if (viewBtn) {
+        viewBtn.addEventListener('click', () => {
+          const id = $('#modal-ticket-id').textContent.trim();
+          closeModal();
+          const inputEl = $('#ticketInput');
+          if (inputEl) inputEl.value = id;
+          setTimeout(() => searchTicket(id, { scroll: true, silent: true }), 160);
+        });
+      }
+
+      /* Mobile menu */
+      const menuBtn = $('#mobile-menu-btn');
+      const menu = $('#mobile-menu');
+      const setMenu = (open) => {
+        if (!menu || !menuBtn) return;
+        menu.classList.toggle('hidden', !open);
+        menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        menuBtn.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู');
+        menuBtn.innerHTML = icon(open ? 'x' : 'menu', 'h-5 w-5');
+        refreshIcons();
+      };
+      if (menuBtn) {
+        menuBtn.addEventListener('click', () => setMenu(menu.classList.contains('hidden')));
+      }
+      $$('.mobile-link').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { setMenu(false); closeModal(); }
+      });
+      /* Sticky header shadow + active nav highlighting */
+      const header = $('#site-header');
+      const navLinks = $$('.nav-link');
+      const sections = ['features', 'how-it-works', 'track']
+        .map((id) => document.getElementById(id))
+        .filter(Boolean);
+
+      const onScroll = () => {
+        if (header) {
+          const scrolled = window.scrollY > 8;
+          header.classList.toggle('shadow-card', scrolled);
+        }
+        let currentId = '';
+        const offset = window.scrollY + 140;
+        sections.forEach((sec) => { if (sec.offsetTop <= offset) currentId = sec.id; });
+        navLinks.forEach((link) => {
+          const isActive = link.getAttribute('href') === '#' + currentId;
+          link.classList.toggle('bg-slate-100', isActive);
+          link.classList.toggle('text-slate-900', isActive);
+          link.classList.toggle('text-slate-600', !isActive);
+        });
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll */
+      const revealEls = $$('.reveal');
+      if ('IntersectionObserver' in window && revealEls.length) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealEls.forEach((el) => observer.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      }
+
+    }
+
+    /* ---------- Init ---------- */
+    function init() {
+      const yearEl = $('#year');
+      if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+      seedDemoTicket();
+      bindEvents();
+      bindChrome();
+      renderPreviews();
+      updateTicketCount();
+      refreshIcons();
+
+      // Re-render icons once CDN/script settle (Lucide swaps <i> for <svg>).
+      setTimeout(refreshIcons, 300);
+      window.addEventListener('load', refreshIcons);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+
+
+</body>
+</html>
+
